@@ -1,0 +1,33 @@
+model U008
+  replaceable package Medium = Modelica.Media.Air.SimpleAir;
+  inner Modelica.Fluid.System system annotation(Placement(visible = true, transformation(origin = {-180, 82}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Fluid.Sensors.Pressure pressure1(redeclare package Medium = Medium) annotation(Placement(visible = true, transformation(origin = {-90, 56}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Logical.OnOffController onoffcontroller1(bandwidth = 500) annotation(Placement(visible = true, transformation(origin = {-50, 62}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Sources.Constant const(k = 101550) annotation(Placement(visible = true, transformation(origin = {-144, 68}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.MathBoolean.OnDelay ondelay2(delayTime = 1.7) annotation(Placement(visible = true, transformation(origin = {-16, 62}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Fluid.Sensors.MassFlowRate massflowrate1(redeclare package Medium = Medium) annotation(Placement(visible = true, transformation(origin = {-58, -38}, extent = {{-10, -10}, {10, 10}}, rotation = 360)));
+  Modelica.Fluid.Valves.ValveLinear valvelinear1(dp_nominal = 1000, m_flow_nominal = 0.1, redeclare package Medium = Medium) annotation(Placement(visible = true, transformation(origin = {-18, -38}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Continuous.LimPID PID annotation(Placement(visible = true, transformation(origin = {-58, -4}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Sources.Constant constant1(k = 0.017) annotation(Placement(visible = true, transformation(origin = {-94, -4}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Fluid.Vessels.ClosedVolume volume(nPorts = 3, use_portsData = false, V = 100, redeclare package Medium = Medium) annotation(Placement(visible = true, transformation(origin = {-116, 46}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Fluid.Sources.FixedBoundary boundary(p = 100000, nPorts = 1, redeclare package Medium = Medium) annotation(Placement(visible = true, transformation(origin = {30, -38}, extent = {{10, -10}, {-10, 10}}, rotation = 0)));
+  Modelica.Fluid.Valves.ValveDiscrete valvediscrete1(dp_nominal = 28300, m_flow_nominal = 0.03, redeclare package Medium = Medium) annotation(Placement(visible = true, transformation(origin = {30, 16}, extent = {{10, -10}, {-10, 10}}, rotation = 0)));
+  Modelica.Fluid.Sources.FixedBoundary fixedboundary1(nPorts = 1, p = 130000, redeclare package Medium = Medium) annotation(Placement(visible = true, transformation(origin = {114, 16}, extent = {{10, -10}, {-10, 10}}, rotation = 0)));
+  Modelica.Fluid.Pipes.StaticPipe pipe(length = 35, diameter = 0.025, redeclare package Medium = Medium) annotation(Placement(visible = true, transformation(origin = {72, 16}, extent = {{10, -10}, {-10, 10}}, rotation = 0)));
+equation
+  connect(pipe.port_a, valvediscrete1.port_b) annotation(Line(points = {{82, 16}, {20, 16}}, color = {0, 127, 255}));
+  connect(fixedboundary1.ports[1], pipe.port_a) annotation(Line(points = {{104, 16}, {82, 16}}, color = {0, 127, 255}));
+  connect(volume.ports[2], valvediscrete1.port_a) annotation(Line(points = {{-116, 36}, {-104, 36}, {-104, 16}, {40, 16}}, color = {0, 127, 255}));
+  connect(ondelay2.y, valvediscrete1.open) annotation(Line(points = {{-4, 62}, {30, 62}, {30, 24}}, color = {255, 0, 255}));
+  connect(valvelinear1.port_b, boundary.ports[1]) annotation(Line(points = {{-8, -38}, {20, -38}}, color = {0, 127, 255}));
+  connect(volume.ports[3], pressure1.port) annotation(Line(points = {{-116, 36}, {-90, 36}, {-90, 46}}, color = {0, 127, 255}));
+  connect(volume.ports[1], massflowrate1.port_a) annotation(Line(points = {{-116, 36}, {-116, -38}, {-68, -38}}, color = {0, 127, 255}));
+  connect(constant1.y, PID.u_s) annotation(Line(points = {{-83, -4}, {-70, -4}}, color = {0, 0, 127}));
+  connect(PID.y, valvelinear1.opening) annotation(Line(points = {{-47, -4}, {-18, -4}, {-18, -30}}, color = {0, 0, 127}));
+  connect(massflowrate1.m_flow, PID.u_m) annotation(Line(points = {{-58, -27}, {-58, -16}}, color = {0, 0, 127}));
+  connect(massflowrate1.port_b, valvelinear1.port_a) annotation(Line(points = {{-48, -38}, {-28, -38}}, color = {0, 127, 255}));
+  connect(onoffcontroller1.y, ondelay2.u) annotation(Line(points = {{-39, 62}, {-32, 62}, {-32, 62}, {-32, 62}}, color = {255, 0, 255}));
+  connect(const.y, onoffcontroller1.reference) annotation(Line(points = {{-133, 68}, {-62, 68}}, color = {0, 0, 127}));
+  connect(pressure1.p, onoffcontroller1.u) annotation(Line(points = {{-79, 56}, {-62, 56}}, color = {0, 0, 127}));
+  annotation(Diagram(coordinateSystem(extent = {{-200, -100}, {200, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {2, 2})), Icon(coordinateSystem(extent = {{-200, -100}, {200, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {2, 2})));
+end U008;

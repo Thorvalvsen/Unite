@@ -1,0 +1,38 @@
+model TACS004
+  replaceable package Medium = Modelica.Media.Water.StandardWaterOnePhase constrainedby PartialMedium;
+  inner Modelica.Fluid.System system(m_flow_start = 30, allowFlowReversal = false, energyDynamics = Modelica.Fluid.Types.Dynamics.SteadyState, massDynamics = Modelica.Fluid.Types.Dynamics.SteadyState) annotation(Placement(visible = true, transformation(origin = {-184, 86}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Fluid.Sources.FixedBoundary boundary(nPorts = 2, redeclare package Medium = Medium) annotation(Placement(visible = true, transformation(origin = {-180, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Fluid.Machines.PrescribedPump pump(checkValve = true, nParallel = 1, use_N_in = true, N_nominal = 1450, redeclare package Medium = Medium, redeclare function flowCharacteristic = Modelica.Fluid.Machines.BaseClasses.PumpCharacteristics.linearFlow(V_flow_nominal = {0.06, 0.22}, head_nominal = {84, 68})) annotation(Placement(visible = true, transformation(origin = {-140, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Fluid.Sensors.Pressure pressure1(redeclare package Medium = Medium) annotation(Placement(visible = true, transformation(origin = {-116, 34}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Continuous.LimPID PID(yMax = 300, k = 0.5, Ti = 0.5, initType = Modelica.Blocks.Types.InitPID.SteadyState, Td = 1, wp = 0.8, wd = 0.2, Ni = 1, Nd = 1) annotation(Placement(visible = true, transformation(origin = {-88, 78}, extent = {{10, -10}, {-10, 10}}, rotation = 0)));
+  Modelica.Blocks.Sources.Constant const(k = 850000) annotation(Placement(visible = true, transformation(origin = {-52, 78}, extent = {{10, -10}, {-10, 10}}, rotation = 0)));
+  Modelica.Fluid.Sources.FixedBoundary fixedboundary1(nPorts = 1, redeclare package Medium = Medium) annotation(Placement(visible = true, transformation(origin = {90, 0}, extent = {{10, -10}, {-10, 10}}, rotation = 0)));
+  Modelica.Fluid.Pipes.DynamicPipe pipe(redeclare package Medium = Medium, length = 260, diameter = 0.25, height_ab = 5) annotation(Placement(visible = true, transformation(origin = {4, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Fluid.Fittings.GenericResistances.VolumeFlowRate volumeflowrate4(redeclare package Medium = Medium, a = 5.5e8, dp_start = 550000, m_flow_start = 88) annotation(Placement(visible = true, transformation(origin = {44, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Fluid.Sources.FixedBoundary fixedboundary3(redeclare package Medium = Medium, nPorts = 1) annotation(Placement(visible = true, transformation(origin = {90, -40}, extent = {{10, -10}, {-10, 10}}, rotation = 0)));
+  Modelica.Fluid.Fittings.GenericResistances.VolumeFlowRate volumeflowrate1(a = 7.2e7, dp(start = 6e5), redeclare package Medium = Medium) annotation(Placement(visible = true, transformation(origin = {42, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Fluid.Fittings.TeeJunctionIdeal teejunctionideal2 annotation(Placement(visible = true, transformation(origin = {-58, 0}, extent = {{-10, 10}, {10, -10}}, rotation = 0)));
+  Modelica.Fluid.Pipes.DynamicPipe dynamicpipe1(length = 260, diameter = 0.4, height_ab = 5, redeclare package Medium = Medium) annotation(Placement(visible = true, transformation(origin = {4, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Fluid.Pipes.DynamicPipe dynamicpipe2(length = 150, diameter = 0.4, redeclare package Medium = Medium) annotation(Placement(visible = true, transformation(origin = {-94, 0}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Fluid.Fittings.GenericResistances.VolumeFlowRate volumeflowrate3(redeclare package Medium = Medium, a = 1.7e7, dp_start = 170000, m_flow_start = 30) annotation(Placement(visible = true, transformation(origin = {-34, -40}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Blocks.Math.Add add1 annotation(Placement(visible = true, transformation(origin = {-140, 36}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
+  Modelica.Blocks.Sources.Constant constant1(k = 1600) annotation(Placement(visible = true, transformation(origin = {-184, 62}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+equation
+  connect(constant1.y, add1.u2) annotation(Line(points = {{-173, 62}, {-146, 62}, {-146, 50}, {-146, 50}}, color = {0, 0, 127}));
+  connect(add1.y, pump.N_in) annotation(Line(points = {{-140, 25}, {-140, 25}, {-140, 12}, {-140, 12}}, color = {0, 0, 127}));
+  connect(PID.y, add1.u1) annotation(Line(points = {{-99, 78}, {-134, 78}, {-134, 48}, {-134, 48}}, color = {0, 0, 127}));
+  connect(pressure1.p, PID.u_m) annotation(Line(points = {{-105, 34}, {-88, 34}, {-88, 66}}, color = {0, 0, 127}));
+  connect(const.y, PID.u_s) annotation(Line(points = {{-63, 78}, {-76, 78}}, color = {0, 0, 127}));
+  connect(teejunctionideal2.port_3, volumeflowrate3.port_a) annotation(Line(points = {{-58, -10}, {-58, -40}, {-44, -40}}, color = {0, 127, 255}));
+  connect(volumeflowrate3.port_b, pipe.port_a) annotation(Line(points = {{-24, -40}, {-6, -40}}, color = {0, 127, 255}));
+  connect(pump.port_b, dynamicpipe2.port_a) annotation(Line(points = {{-130, 0}, {-104, 0}}, color = {0, 127, 255}));
+  connect(dynamicpipe2.port_b, teejunctionideal2.port_1) annotation(Line(points = {{-84, 0}, {-68, 0}}, color = {0, 127, 255}));
+  connect(dynamicpipe1.port_b, volumeflowrate1.port_a) annotation(Line(points = {{14, 0}, {32, 0}}, color = {0, 127, 255}));
+  connect(teejunctionideal2.port_2, dynamicpipe1.port_a) annotation(Line(points = {{-48, 0}, {-6, 0}}, color = {0, 127, 255}));
+  connect(volumeflowrate1.port_b, fixedboundary1.ports[1]) annotation(Line(points = {{52, 0}, {80, 0}}, color = {0, 127, 255}));
+  connect(volumeflowrate4.port_b, fixedboundary3.ports[1]) annotation(Line(points = {{54, -40}, {80, -40}}, color = {0, 127, 255}));
+  connect(pipe.port_b, volumeflowrate4.port_a) annotation(Line(points = {{14, -40}, {34, -40}}, color = {0, 127, 255}));
+  connect(pump.port_b, pressure1.port) annotation(Line(points = {{-130, 0}, {-116, 0}, {-116, 24}}, color = {0, 127, 255}));
+  connect(boundary.ports[1], pump.port_a) annotation(Line(points = {{-170, 0}, {-150, 0}}, color = {0, 127, 255}));
+  annotation(Diagram(coordinateSystem(extent = {{-200, -100}, {200, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {2, 2})), Icon(coordinateSystem(extent = {{-200, -100}, {200, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {2, 2})));
+end TACS004;
